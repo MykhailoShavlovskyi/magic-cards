@@ -2,8 +2,8 @@ import { SecurePassword } from "@blitzjs/auth"
 import { resolver } from "@blitzjs/rpc"
 import { AuthenticationError } from "blitz"
 import db from "db"
-import { Role } from "types"
-import { Login } from "../validations"
+import { Role } from "@prisma/client"
+import { Login } from "../auth.validation"
 
 export const authenticateUser = async (rawEmail: string, rawPassword: string) => {
   const { email, password } = Login.parse({ email: rawEmail, password: rawPassword })

@@ -1,6 +1,6 @@
 import db from "db"
 import { SecurePassword } from "@blitzjs/auth"
-import { Role } from "types"
+import { Role } from "@prisma/client"
 
 export default async function signup(input, ctx) {
   const blitzContext = ctx
@@ -8,7 +8,7 @@ export default async function signup(input, ctx) {
   const hashedPassword = await SecurePassword.hash((input.password as string) || "test-password")
   const email = (input.email as string) || "test" + Math.random() + "@test.com"
   const user = await db.user.create({
-    data: { email, hashedPassword, role: "user" },
+    data: { email, hashedPassword, role: Role.USER },
     select: { id: true, name: true, email: true, role: true },
   })
 

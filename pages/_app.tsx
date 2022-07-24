@@ -3,7 +3,7 @@ import { AuthenticationError, AuthorizationError } from "blitz"
 import React from "react"
 import { withBlitz } from "app/blitz-client"
 
-function RootErrorFallback({ error }: ErrorFallbackProps) {
+const RootErrorFallback = ({ error }: ErrorFallbackProps) => {
   if (error instanceof AuthenticationError) {
     return <div>Error: You are not authenticated</div>
   } else if (error instanceof AuthorizationError) {
@@ -23,12 +23,10 @@ function RootErrorFallback({ error }: ErrorFallbackProps) {
   }
 }
 
-function MyApp({ Component, pageProps }: AppProps) {
-  return (
-    <ErrorBoundary FallbackComponent={RootErrorFallback}>
-      <Component {...pageProps} />
-    </ErrorBoundary>
-  )
-}
+const MyApp = ({ Component, pageProps }: AppProps) => (
+  <ErrorBoundary FallbackComponent={RootErrorFallback}>
+    <Component {...pageProps} />
+  </ErrorBoundary>
+)
 
 export default withBlitz(MyApp)

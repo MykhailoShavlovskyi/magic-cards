@@ -51,5 +51,3 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
     )
   }
 )
-
-export default LabeledTextField

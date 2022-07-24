@@ -22,29 +22,26 @@ interface OnSubmitResult {
 export const FORM_ERROR = "FORM_ERROR"
 
 export function Form<S extends z.ZodType<any, any>>({
-  children,
   submitText,
   schema,
   initialValues,
+  children,
   onSubmit,
   ...props
 }: FormProps<S>) {
   const [formError, setFormError] = useState<string | null>(null)
+
+  const handleSubmit = async (values, { setErrors }) => {
+    const { FORM_ERROR, ...otherErrors } = (await onSubmit(values)) || {}
+    if (FORM_ERROR) setFormError(FORM_ERROR)
+    if (Object.keys(otherErrors).length > 0) setErrors(otherErrors)
+  }
+
   return (
     <Formik
       initialValues={initialValues || {}}
       validate={validateZodSchema(schema)}
-      onSubmit={async (values, { setErrors }) => {
-        const { FORM_ERROR, ...otherErrors } = (await onSubmit(values)) || {}
-
-        if (FORM_ERROR) {
-          setFormError(FORM_ERROR)
-        }
-
-        if (Object.keys(otherErrors).length > 0) {
-          setErrors(otherErrors)
-        }
-      }}
+      onSubmit={handleSubmit}
     >
       {({ handleSubmit, isSubmitting }) => (
         <form onSubmit={handleSubmit} className="form" {...props}>
@@ -73,5 +70,3 @@ export function Form<S extends z.ZodType<any, any>>({
     </Formik>
   )
 }
-
-export default Form
