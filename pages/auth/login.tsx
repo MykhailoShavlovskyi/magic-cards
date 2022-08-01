@@ -1,23 +1,11 @@
 import Layout from "app/layouts/Layout"
-import { LoginForm } from "app/components/auth/LoginForm"
-import { useRouter } from "next/router"
-import { useMutation } from "@blitzjs/rpc"
-import login from "../../app/data/auth/mutations/login"
+import { LoginForm } from "app/containers/auth/LoginForm"
+import { getLoginMessage } from "../../app/localization/common"
 
-const LoginPage = () => {
-  const [loginMutation] = useMutation(login)
-  const router = useRouter()
-  const handleLogin = async (values) => {
-    await loginMutation(values)
-    const next = router.query.next ? decodeURIComponent(router.query.next as string) : "/"
-    await router.push(next)
-  }
-
-  return (
-    <Layout title="Log In">
-      <LoginForm onSubmit={handleLogin} />
-    </Layout>
-  )
-}
+const LoginPage = () => (
+  <Layout title={getLoginMessage()}>
+    <LoginForm />
+  </Layout>
+)
 
 export default LoginPage

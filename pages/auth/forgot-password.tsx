@@ -1,17 +1,11 @@
 import Layout from "app/layouts/Layout"
-import forgotPassword from "app/data/auth/mutations/forgotPassword"
-import { useMutation } from "@blitzjs/rpc"
-import { ForgotPasswordForm } from "../../app/components/auth/ForgotPasswordForm"
+import { ForgotPasswordForm } from "../../app/containers/auth/ForgotPasswordForm"
+import { getForgotPasswordMessage } from "../../app/localization/shared"
 
-const ForgotPasswordPage = () => {
-  const [forgotPasswordMutation, { isSuccess }] = useMutation(forgotPassword)
-  const handleSubmit = (values) => forgotPasswordMutation(values)
-
-  return (
-    <Layout title="Forgot Your Password?">
-      <ForgotPasswordForm submitted={isSuccess} onSubmit={handleSubmit} />
-    </Layout>
-  )
-}
+const ForgotPasswordPage = () => (
+  <Layout title={getForgotPasswordMessage()}>
+    <ForgotPasswordForm />
+  </Layout>
+)
 
 export default ForgotPasswordPage

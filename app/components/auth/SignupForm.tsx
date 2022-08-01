@@ -1,7 +1,6 @@
-import { LabeledTextField } from "app/components/common/LabeledTextField"
-import { Form, FORM_ERROR } from "app/components/common/Form"
-import { email, password, Signup } from "app/data/auth/auth.validation"
-import { z } from "zod"
+import { TextFiled } from "app/components/common/form/TextFiled"
+import { Form, FORM_ERROR } from "app/components/common/form/Form"
+import { Signup } from "app/db/auth/auth.validation"
 
 type Props = {
   onSubmit: (v: any) => void
@@ -35,8 +34,8 @@ export const SignupForm = (props: Props) => {
         initialValues={initialValues}
         onSubmit={handleSubmit}
       >
-        <LabeledTextField name="email" label="Email" placeholder="Email" />
-        <LabeledTextField name="password" label="Password" placeholder="Password" type="password" />
+        <TextFiled name="email" label="Email" placeholder="Email" />
+        <TextFiled name="password" label="Password" placeholder="Password" type="password" />
       </Form>
     </div>
   )

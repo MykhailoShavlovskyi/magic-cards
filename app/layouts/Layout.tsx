@@ -1,11 +1,8 @@
 import Head from "next/head"
-import React from "react"
+import React, { PropsWithChildren } from "react"
 import { BlitzLayout } from "@blitzjs/next"
 
-const Layout: BlitzLayout<{ title?: string; children?: React.ReactNode }> = ({
-  title,
-  children,
-}) => (
+const Layout: BlitzLayout<PropsWithChildren<{ title?: string }>> = ({ title, children }) => (
   <>
     <Head>
       <title>{title || "magic-cards-blitz"}</title>

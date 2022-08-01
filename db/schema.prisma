@@ -6,9 +6,12 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
+// -----------------------------------------------------------------------------------------------------------
 // ---------------------------------------------- USERS ------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 enum Role {
   USER
@@ -17,6 +20,7 @@ enum Role {
 
 model User {
   id                 Int       @id @default(autoincrement())
+
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   name               String?
@@ -26,10 +30,14 @@ model User {
 
   tokens             Token[]
   sessions           Session[]
+  activities         UserActivity[]
+
+  orders             Order[]
 }
 
 model Session {
   id                 Int       @id @default(autoincrement())
+
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   expiresAt          DateTime?
@@ -41,6 +49,23 @@ model Session {
 
   user               User?     @relation(fields: [userId], references: [id])
   userId             Int?
+}
+
+enum ActivityType {
+  A
+  B
+}
+
+model UserActivity {
+  id                 Int       @id @default(autoincrement())
+
+  type               ActivityType
+  data               String
+  ip                 String
+  date               DateTime  @default(now())
+
+  user               User      @relation(fields: [userId], references: [id])
+  userId             Int
 }
 
 model Token {
@@ -58,3 +83,194 @@ model Token {
   @@unique([hashedToken, type])
 }
 
+// ------------------------------------------------------------------------------------------------------------
+// -------------------------------------------- PRODUCTS ------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------
+
+model Product {
+  id                        Int                 @id @default(autoincrement())
+
+  isbn                      String              @unique
+  name                      String              @default("New product")
+  description               String              @default("")
+  active                    Boolean             @default(false)
+  thumbnailKey              String
+  featured                  Boolean             @default(false)
+
+  defaultPrice              Float               @default(0)
+  regularPrice              Float               @default(0)
+  wholesalePrice            Float               @default(0)
+  defaultMinimumQuantity    Int                 @default(0)
+  regularMinimumQuantity    Int                 @default(0)
+  wholesaleMinimumQuantity  Int                 @default(0)
+
+  length                    Float               @default(0)
+  width                     Float               @default(0)
+  height                    Float               @default(0)
+  weight                    Float               @default(0)
+
+  index                     Int                 @default(0) // TODO not needed?
+
+  createdAt                 DateTime            @default(now())
+  updatedAt                 DateTime            @updatedAt
+
+  category                  ProductCategory     @relation(fields: [categoryId], references: [id])
+  categoryId                Int
+  set                       ProductSet          @relation(fields: [setId], references: [id])
+  setId                     Int
+  attributes                Attribute[]
+
+  orders                    Order[]
+  vouchers                  Voucher[]
+}
+
+model ProductCategory {
+  id                        Int                 @id @default(autoincrement())
+
+  name                      String              @default("New category")
+  index                     Int                 @default(0)
+
+  products                  Product[]
+  vouchers                  Voucher[]
+}
+
+model ProductSet {
+  id                        Int                 @id @default(autoincrement())
+
+  name                      String              @default("New set")
+  index                     Int                 @default(0)
+
+  products                  Product[]
+  vouchers                  Voucher[]
+}
+
+model Attribute {
+  id                        Int                 @id @default(autoincrement())
+
+  name                      String              @default("New attribute")
+
+  category                  AttributeCategory   @relation(fields: [categoryId], references: [id])
+  categoryId                Int
+  products                  Product[]
+}
+
+model AttributeCategory {
+  id                        Int                 @id @default(autoincrement())
+
+  name                      String              @default("New attribute category")
+  index                     Int                 @default(0)
+
+  attributes                Attribute[]
+}
+
+// ----------------------------------------------------------------------------------------------------------
+// ------------------------------------------- Orders -------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------
+
+// TODO
+enum Payment {
+  A
+  B
+}
+
+// TODO
+enum OrderStatus {
+  A
+  B
+}
+
+model Order {
+  id                        Int                 @id @default(autoincrement())
+
+  firstName                 String              @default("")
+  lastName                  String              @default("")
+  email                     String              @default("")
+  phone                     String              @default("")
+  telegram                  String              @default("")
+  address                   String              @default("")
+
+  total                     Float               @default(0)
+  payment                   Payment             @default(A)
+  discount                  Float               @default(0)
+
+  ip                        String              @default("")
+  comment                   String              @default("")
+
+  status                    OrderStatus         @default(A)
+  createdAt                 DateTime            @default(now())
+  updatedAt                 DateTime            @updatedAt
+
+  customer                  User                @relation(fields: [customerId], references: [id])
+  customerId                Int
+  currency                  Currency            @relation(fields: [currencyId], references: [id])
+  currencyId                Int
+  products                  Product[]
+
+  voucherHistory            VoucherHistory?
+}
+
+// ----------------------------------------------------------------------------------------------------------
+// ------------------------------------------ Vouchers ------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------
+
+enum VoucherType {
+  A
+  B
+}
+
+model Voucher {
+  id                        Int                 @id @default(autoincrement())
+
+  name                      String              @default("")
+  code                      String              @default("")
+  discountType              VoucherType         @default(A)
+  discount                  Float               @default(0)
+  amount                    Float               @default(0)
+  forRegistered             Boolean             @default(false)
+
+  maxUse                    Int                 @default(0)
+  maxUseUser                Int                 @default(0)
+  startDate                 DateTime            @default(now())
+  endDate                   DateTime            @default(now())
+
+  active                    Boolean
+
+  createdAt                 DateTime            @default(now())
+
+  categories                ProductCategory[]
+  sets                      ProductSet[]
+  products                  Product[]
+
+  voucherHistories          VoucherHistory[]
+}
+
+model VoucherHistory {
+  id                        Int                 @id @default(autoincrement())
+
+  amount                    Float               @default(0)
+  createdAt                 DateTime            @default(now())
+
+  voucher                   Voucher             @relation(fields: [voucherId], references: [id])
+  voucherId                 Int
+  order                     Order               @relation(fields: [orderId], references: [id])
+  orderId                   Int                 @unique
+}
+
+// ----------------------------------------------------------------------------------------------------------
+// -------------------------------------------- MISC --------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------
+
+model Currency {
+  id                        Int                 @id @default(autoincrement())
+
+  name                      String              @default("New currency")
+  primary                   Boolean             @default(false)
+  rate                      Float               @default(1)
+
+  orders                    Order[]
+}
+
+model Banned {
+  id                        Int                 @id @default(autoincrement())
+  ip                        String              @unique
+}

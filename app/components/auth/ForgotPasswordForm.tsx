@@ -1,6 +1,6 @@
-import { ForgotPassword, Login } from "../../data/auth/auth.validation"
-import { Form, FORM_ERROR } from "../common/Form"
-import { LabeledTextField } from "../common/LabeledTextField"
+import { ForgotPassword } from "../../db/auth/auth.validation"
+import { Form, FORM_ERROR } from "../common/form/Form"
+import { TextFiled } from "../common/form/TextFiled"
 
 type Props = {
   submitted: boolean
@@ -36,7 +36,7 @@ export const ForgotPasswordForm = ({ submitted, onSubmit }: Props) => {
           initialValues={{ email: "" }}
           onSubmit={handleSubmit}
         >
-          <LabeledTextField name="email" label="Email" placeholder="Email" />
+          <TextFiled name="email" label="Email" placeholder="Email" />
         </Form>
       )}
     </>
